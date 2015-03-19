@@ -21,7 +21,11 @@
             android:name=".MyService"
             android:enabled="true"
             android:exported="true" >
+            <intent-filter>
+                <action android:name="com.example.android.service" />
+            </intent-filter>
         </service>
+        <service android:name=".MyIntentService" />
     </application>
 
 </manifest>

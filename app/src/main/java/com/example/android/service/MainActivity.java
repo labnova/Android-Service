@@ -18,7 +18,8 @@ public class MainActivity extends ActionBarActivity {
 
 
     public void startService(View view) {
-        startService(new Intent(getBaseContext(), MyService.class));
+        //startService(new Intent(getBaseContext(), MyService.class));
+        startService(new Intent(getBaseContext(), MyIntentService.class));
     }
 
     public void stopService(View view) {
