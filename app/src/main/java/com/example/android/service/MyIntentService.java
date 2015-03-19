@@ -21,6 +21,10 @@ public class MyIntentService extends IntentService {
         try {
             int result = DownloadFile(new URL("http://www.labnova.it"));
             Log.d("IntentService", "Downloaded" +result+"bytes");
+            Intent broadcastIntent = new Intent();
+            broadcastIntent.setAction("FILE_DOWNLOADED_ACTION");
+            getBaseContext().sendBroadcast(broadcastIntent);
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
