@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.widget.Toast;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class MyService extends Service {
     public MyService() {
     }
@@ -17,9 +20,25 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // vogliamo che il service continui a girare finché non è stoppato in maniera esplicita.
-        Toast.makeText(this, "Service è partito", Toast.LENGTH_LONG).show();
+        try {
+           int result= DownloadFile(new URL("https://drive.google.com/drive/u/0/#folders/0B95IeH0gS_aVUE92NWpPWDFpZmc/0B95IeH0gS_aVZmV2RllSSHFYRjg"));
+           Toast.makeText(getBaseContext(),"Downloaded " +result+ "bytes", Toast.LENGTH_LONG).show();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
         return START_STICKY;
+
+    }
+
+    private int DownloadFile(URL url) {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return 100;
     }
 
     @Override
