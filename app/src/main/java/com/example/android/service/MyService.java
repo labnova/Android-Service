@@ -9,9 +9,23 @@ import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MyService extends Service {
+    int counter = 0;
+    static final int UPDATE_INTERVAL = 1000;
+    private Timer timer = new Timer();
     public MyService() {
+    }
+
+    private void doSomethingRepeatedly() {
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Log.d("MyService", String.valueOf(++counter));
+            }
+        }, 0, UPDATE_INTERVAL);
     }
 
     @Override
@@ -22,6 +36,9 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        doSomethingRepeatedly();
+
         try {
           new DoBackgroundTask().execute(
                   new URL("http://www.labnova.it"),
@@ -79,6 +96,11 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        if(timer != null) {
+            timer.cancel();
+        }
+
         Toast.makeText(this, "Service è distrutto", Toast.LENGTH_LONG).show();
         stopSelf();
     }
