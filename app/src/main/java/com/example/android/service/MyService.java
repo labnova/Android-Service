@@ -2,7 +2,9 @@ package com.example.android.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.net.MalformedURLException;
@@ -21,8 +23,13 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-           int result= DownloadFile(new URL("https://drive.google.com/drive/u/0/#folders/0B95IeH0gS_aVUE92NWpPWDFpZmc/0B95IeH0gS_aVZmV2RllSSHFYRjg"));
-           Toast.makeText(getBaseContext(),"Downloaded " +result+ "bytes", Toast.LENGTH_LONG).show();
+          new DoBackgroundTask().execute(
+                  new URL("http://www.labnova.it"),
+                  new URL("http://www.labnova.it"),
+                  new URL("http://www.labnova.it"),
+                  new URL("http://www.labnova.it"),
+                  new URL("http://www.labnova.it"));
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -41,9 +48,38 @@ public class MyService extends Service {
         return 100;
     }
 
+    public class DoBackgroundTask extends AsyncTask<URL, Integer, Long> {
+       @Override
+        protected Long doInBackground(URL... urls) {
+           int count = urls.length;
+           long totalBytesDownloaded = 0;
+           for (int i=0; i < count; i++) {
+               totalBytesDownloaded += DownloadFile(urls[i]);
+               publishProgress((int)(((i+1)/ (float) count) *100));
+           }
+            return totalBytesDownloaded;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer...progress) {
+            Log.d("Downloading", String.valueOf(progress[0])+ "% downloaded");
+            Toast.makeText(getBaseContext(), String.valueOf(progress[0])+ "% downloaded", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        protected void onPostExecute(Long result) {
+            Toast.makeText(getBaseContext(), "Downloaded " +result+ "bytes", Toast.LENGTH_LONG).show();
+            stopSelf();
+        }
+    }
+
+
+
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         Toast.makeText(this, "Service è distrutto", Toast.LENGTH_LONG).show();
+        stopSelf();
     }
 }
